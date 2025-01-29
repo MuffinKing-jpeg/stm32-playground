@@ -42,7 +42,8 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 add_subdirectory(Drivers/AHT20)
-add_subdirectory(Drivers/SX1278)
+# add_subdirectory(Drivers/SX1278)
+add_subdirectory(Drivers/ENS160)
 add_subdirectory(Libs/CLI)
 
 
@@ -55,7 +56,8 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     stm32cubemx
     cli
     aht20
-    sx1278
+    ens160
+    # sx1278
     # Add user defined libraries
 )
 file(GLOB DBG_FILES "./Core/Src/debug/*.c")
