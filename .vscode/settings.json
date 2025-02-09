@@ -1,7 +1,23 @@
 {
-    "cortex-debug.variableUseNaturalFormat": false,
+    "cortex-debug.variableUseNaturalFormat": true,
     "files.associations": {
         "usart.h": "c",
-        "toggle_pin.h": "c"
-    }
+        "toggle_pin.h": "c",
+        "main.h": "c",
+        "stm32f3xx_hal.h": "c",
+        "stm32f3xx_hal_conf.h": "c"
+    },
+    "cSpell.words": [
+        "Andrii",
+        "INTDAT",
+        "INTEN",
+        "INTGPR",
+        "INTPOL",
+        "MISR",
+        "MOSI",
+        "NEWDAT",
+        "NEWGPR",
+        "STATAS",
+        "TVOC"
+    ]
 }

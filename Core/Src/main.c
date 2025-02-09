@@ -18,10 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "crc.h"
 #include "dma.h"
 #include "i2c.h"
-#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -29,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "cli.h"
 #include "aht20.h"
+#include "ens160.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +51,10 @@
 
 float temp = 0;
 float humidity = 0;
+ENS160_DeviceType ENS160_Device;
+
+uint32_t ens_tick_delay = 5000;
+uint32_t aht_tick_delay = 300;
 
 /* USER CODE END PV */
 
@@ -77,7 +80,6 @@ int main(void)
 
 #ifndef USE_PRECALCULATED_HASH
 
-    populate_cmd_hash();
 
 #endif
   /* USER CODE END 1 */
@@ -103,8 +105,6 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
-  MX_CRC_Init();
-  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
     start_rx();
@@ -114,13 +114,47 @@ int main(void)
     AHT20_StartMeasurement();
     HAL_Delay(150);
     AHT20_ParseData(&temp,&humidity);
-
+    ENS160_Init(&hi2c1, &ENS160_Device);
+    ENS160_UpdateEnvironment(&ENS160_Device,&temp, &humidity);
+    ENS160_ChangeMode(&ENS160_Device,ENS160_OPMODE_STANDARD);
+    HAL_Delay(5000);
+    ENS160_ReadData(&ENS160_Device);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+    uint32_t current_tick = HAL_GetTick();
+    uint32_t ens_start_tick = current_tick;
+    uint8_t aht_start_tick = current_tick;
+    uint8_t aht_measuring = 0;
+
     while (1)
     {
+      current_tick = HAL_GetTick();
+      if (current_tick - ens_start_tick >= ens_tick_delay)
+      {
+        ens_start_tick = current_tick;
+        ENS160_ReadData(&ENS160_Device);
+        /* code */
+      }
+      if (current_tick - aht_start_tick >= aht_tick_delay)
+      {
+        if (aht_measuring > 0)
+        {
+          AHT20_StartMeasurement();
+          aht_measuring = 0;
+        }
+        else
+        {
+          AHT20_ParseData(&temp,&humidity);
+          aht_measuring = 1;
+        }
+        
+        aht_start_tick = current_tick;
+        /* code */
+      }
+      
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

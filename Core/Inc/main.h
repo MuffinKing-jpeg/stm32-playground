@@ -76,6 +76,7 @@ void Error_Handler(void);
 
 #define AHT20_I2C hi2c1
 #define CLI_UART huart2
+#define ENS160_ADDR_PIN_HIGH
 
 /* USER CODE END Private defines */
 
